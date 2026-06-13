@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Happy 16th, Kashu!</title>
+    <!-- Lightweight library for fireworks -->
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
@@ -90,6 +91,7 @@
 
     <audio id="bg-music" src="music.m4a" type="audio/mp4" preload="metadata"></audio>
 
+    <!-- Secret Unlock Screen -->
     <div id="lock-screen" class="screen">
         <div class="lock-box">
             <h2>Security Check! 🔐</h2>
@@ -100,6 +102,7 @@
         </div>
     </div>
 
+    <!-- Envelope Cover Page -->
     <div id="cover" class="screen hidden">
         <div class="envelope">
             <h1>For Kashu 🌸</h1>
@@ -108,15 +111,18 @@
         </div>
     </div>
 
+    <!-- Inside the Card -->
     <div id="card-content" class="screen hidden">
         <div class="card">
             
+            <!-- Page 1: Flower and Note -->
             <div class="page active" id="page-1">
                 <h2>Happy Sweet 16! 🎂</h2>
                 <img src="flower.jpg" alt="Cute flowers" style="width:100%; border-radius: 10px;">
                 <p class="cute-note">You are the most amazing friend ever. Here is a little something special just for you!</p>
             </div>
 
+            <!-- Page 2: Photo Gallery (Memories - 4 Photos) -->
             <div class="page" id="page-2">
                 <h2>Memories ✨</h2>
                 <div class="gallery">
@@ -132,12 +138,51 @@
                         <img src="pic3.jpg" alt="Memory 3">
                         <div class="caption">Sweetest moments 🌟</div>
                     </div>
+                    <div class="polaroid">
+                        <img src="pic4.jpg" alt="Memory 4">
+                        <div class="caption">Unstoppable duo 👯‍♀️</div>
+                    </div>
                 </div>
             </div>
 
+            <!-- Page 3: Second Photo Gallery (More Memories - 4 Photos) -->
             <div class="page" id="page-3">
+                <h2>More Memories ✨</h2>
+                <div class="gallery">
+                    <div class="polaroid">
+                        <img src="pic5.jpg" alt="Memory 5">
+                        <div class="caption">Fun times 🥳</div>
+                    </div>
+                    <div class="polaroid">
+                        <img src="pic6.jpg" alt="Memory 6">
+                        <div class="caption">Late night chats 🌙</div>
+                    </div>
+                    <div class="polaroid">
+                        <img src="pic7.jpg" alt="Memory 7">
+                        <div class="caption">Making memories 📸</div>
+                    </div>
+                    <div class="polaroid">
+                        <img src="pic8.jpg" alt="Memory 8">
+                        <div class="caption">Forever friends ♾️</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Page 4: New Video and Short Note Page -->
+            <div class="page" id="page-4">
+                <h2>A Special Moment 🎥</h2>
                 <div class="video-container">
-                    <video controls src="video.mp4"></video>
+                    <!-- Added autoplay attributes for mobile reliability -->
+                    <video id="vid-page-4" controls autoplay muted playsinline src="video2.mp4"></video>
+                </div>
+                <p class="cute-note" style="margin-top: 10px; font-size: 1rem;">Looking back at this video always makes me smile. I'm so glad we have these moments captured forever!</p>
+            </div>
+
+            <!-- Page 5: Main Video and Scrollable Letter -->
+            <div class="page" id="page-5">
+                <div class="video-container">
+                    <!-- Added autoplay attributes for mobile reliability -->
+                    <video id="vid-page-5" controls autoplay muted playsinline src="video.mp4"></video>
                 </div>
                 <div class="scroll-text">
                     <p>Dear Kashu,</p>
@@ -148,9 +193,10 @@
                 </div>
             </div>
 
+            <!-- Navigation Buttons -->
             <div class="nav-controls">
                 <button id="prev-btn" class="hidden">⬅️ Back</button>
-                <span id="page-indicator">1 / 3</span>
+                <span id="page-indicator">1 / 5</span>
                 <button id="next-btn">Next ➡️</button>
             </div>
             
@@ -175,6 +221,10 @@
             const pageIndicator = document.getElementById('page-indicator');
             let currentPage = 0;
 
+            // Video elements
+            const vidPage4 = document.getElementById('vid-page-4');
+            const vidPage5 = document.getElementById('vid-page-5');
+
             // Flexible Answer Logic
             unlockBtn.addEventListener('click', () => {
                 const userAnswer = secretInput.value.trim().toLowerCase();
@@ -198,6 +248,9 @@
                 cover.classList.add('hidden');
                 cardContent.classList.remove('hidden');
                 
+                // Fire off initial page check just in case
+                manageVideoPlayback();
+
                 // Fireworks
                 const end = Date.now() + 3000;
                 (function frame() {
@@ -221,11 +274,35 @@
                 }, 300);
             });
 
+            // Smart Autoplay Logic based on the active page
+            function manageVideoPlayback() {
+                // Page 4 handling (Index 3)
+                if (currentPage === 3) {
+                    vidPage4.muted = false; // Unmute it for her automatically
+                    vidPage4.currentTime = 0; // Play from the beginning
+                    vidPage4.play().catch(e => console.log("Autoplay waiting for interaction:", e));
+                } else {
+                    vidPage4.pause(); // Pause if she moves away
+                }
+
+                // Page 5 handling (Index 4)
+                if (currentPage === 4) {
+                    vidPage5.muted = false; // Unmute it for her automatically
+                    vidPage5.currentTime = 0; // Play from the beginning
+                    vidPage5.play().catch(e => console.log("Autoplay waiting for interaction:", e));
+                } else {
+                    vidPage5.pause(); // Pause if she moves away
+                }
+            }
+
             function updatePagination() {
                 pages.forEach((page, index) => page.classList.toggle('active', index === currentPage));
                 pageIndicator.textContent = `${currentPage + 1} / ${pages.length}`;
                 prevBtn.classList.toggle('hidden', currentPage === 0);
                 nextBtn.classList.toggle('hidden', currentPage === pages.length - 1);
+                
+                // Check video states every time pages change
+                manageVideoPlayback();
             }
 
             nextBtn.addEventListener('click', () => { if (currentPage < pages.length - 1) { currentPage++; updatePagination(); } });
@@ -233,4 +310,5 @@
         });
     </script>
 </body>
-</html>
+    </html>
+    

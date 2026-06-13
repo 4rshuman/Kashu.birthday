@@ -88,7 +88,7 @@
 
     <div id="petals-container"></div>
 
-    <audio id="bg-music" src="music.m4a" type="audio/mp4" preload="auto"></audio>
+    <audio id="bg-music" src="music.m4a" preload="auto"></audio>
 
     <div id="lock-screen" class="screen">
         <div class="lock-box">
@@ -213,23 +213,13 @@
             const vidPage4 = document.getElementById('vid-page-4');
             const vidPage5 = document.getElementById('vid-page-5');
 
-            // Setup basic background audio loops configuration
             bgMusic.loop = true;
 
-            // Bypassing aggressive browser restrictions by handling user touch intent early
+            // Lock Screen verification (Simplified, avoiding broken pre-play tricks)
             unlockBtn.addEventListener('click', () => {
                 const userAnswer = secretInput.value.trim().toLowerCase();
                 
                 if (userAnswer.includes('3') && userAnswer.includes('feb')) {
-                    // Start playing music silently right away to register user interaction authorization
-                    bgMusic.muted = true;
-                    bgMusic.play().then(() => {
-                        // Success! Now we pause it and un-mute it so it plays out loud on the next step
-                        bgMusic.pause();
-                        bgMusic.muted = false;
-                        bgMusic.volume = 1.0;
-                    }).catch(e => console.log("Audio target priming signature collected", e));
-
                     lockScreen.classList.add('hidden');
                     cover.classList.remove('hidden');
                 } else {
@@ -242,10 +232,15 @@
                 if (e.key === 'Enter') unlockBtn.click();
             });
 
+            // Open Card (True explicit user interaction to trigger audio)
             openBtn.addEventListener('click', () => {
+                bgMusic.muted = false; // Overrides any default browser muting traps
                 bgMusic.currentTime = 0;
                 bgMusic.volume = 1.0;
-                bgMusic.play().catch(e => console.log("Audio safety fallback executed:", e));
+                
+                bgMusic.play()
+                    .then(() => console.log("Audio pipeline initialized successfully."))
+                    .catch(e => console.log("Audio safety fallback executed:", e));
                 
                 cover.classList.add('hidden');
                 cardContent.classList.remove('hidden');
@@ -275,21 +270,21 @@
                 }, 300);
             });
 
-            // Video listeners to accurately manage the main audio slider live
+            // Live volume ducks when page 4 video speaks
             vidPage4.addEventListener('play', () => {
-                bgMusic.volume = 0.15; // Lower song volume down to 15% when video 2 talks
+                bgMusic.volume = 0.15; 
             });
 
             vidPage4.addEventListener('pause', () => {
-                bgMusic.volume = 1.0; // Bring back music when paused
+                bgMusic.volume = 1.0; 
             });
 
             vidPage4.addEventListener('ended', () => {
-                bgMusic.volume = 1.0; // Bring back music when finish playing
+                bgMusic.volume = 1.0; 
             });
 
             function manageVideoPlayback() {
-                // If we walk away from Page 4, pause the video and turn music back up
+                // If we walk away from Page 4, pause the video and restore track volume
                 if (currentPage !== 3) {
                     vidPage4.pause();
                     if (!cardContent.classList.contains('hidden')) {
@@ -297,7 +292,7 @@
                     }
                 }
 
-                // Page 5 Active Control (Always keep background music at 100% since video is muted)
+                // Page 5 Active Control (Muted video loops smoothly)
                 if (currentPage === 4) {
                     vidPage5.play().catch(e => console.log("Muted video playback block bypass:", e));
                     bgMusic.volume = 1.0;
@@ -305,9 +300,11 @@
                     vidPage5.pause();
                 }
 
-                // General music safety recovery check across layout flips
+                // Safe background music health recovery (Prevents promise collisions)
                 if (bgMusic.paused && !cardContent.classList.contains('hidden')) {
-                    bgMusic.play().catch(e => console.log("Audio track stream recovery exception:", e));
+                    if (bgMusic.readyState >= 2) { 
+                        bgMusic.play().catch(e => console.log("Audio track stream recovery exception:", e));
+                    }
                 }
             }
 
@@ -325,5 +322,5 @@
         });
     </script>
 </body>
-    </html>
-    
+                        </html>
+                        
